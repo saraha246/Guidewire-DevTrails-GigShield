@@ -1,0 +1,2070 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GaashaankaPay — Zero-Wait Income Shield for Delivery Riders</title>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,400;0,600;0,700;1,400&family=Be+Vietnam+Pro:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0e0c0a;
+    --bg2: #161310;
+    --bg3: #1e1a16;
+    --amber: #f5a623;
+    --amber-dim: #c47f0f;
+    --amber-glow: rgba(245,166,35,0.12);
+    --green: #4caf7d;
+    --green-dim: rgba(76,175,125,0.15);
+    --red: #e05c5c;
+    --red-dim: rgba(224,92,92,0.15);
+    --blue: #5b9cf6;
+    --text: #f0ebe3;
+    --text-dim: #8a7f72;
+    --text-muted: #4a4540;
+    --border: rgba(245,166,35,0.18);
+    --border-dim: rgba(255,255,255,0.07);
+    --radius: 16px;
+    --radius-sm: 10px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Be Vietnam Pro', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  h1,h2,h3,h4 { font-family: 'Chakra Petch', sans-serif; }
+
+  /* ── SCREENS ── */
+  .screen { display: none; min-height: 100vh; animation: fadeIn 0.4s ease; }
+  .screen.active { display: flex; flex-direction: column; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* ── TOPBAR ── */
+  .topbar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 18px 24px;
+    border-bottom: 1px solid var(--border-dim);
+    background: var(--bg);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .logo { display: flex; align-items: center; gap: 10px; }
+  .logo-icon {
+    width: 34px; height: 34px; border-radius: 10px;
+    background: var(--amber); display: flex; align-items: center; justify-content: center;
+    font-size: 18px; flex-shrink: 0;
+  }
+  .logo-text { font-family: 'Chakra Petch', sans-serif; font-size: 18px; font-weight: 800; color: var(--text); }
+  .logo-text span { color: var(--amber); }
+  .badge {
+    font-size: 11px; background: var(--amber-glow); color: var(--amber);
+    border: 1px solid var(--border); padding: 3px 10px; border-radius: 20px;
+    font-family: 'Be Vietnam Pro', sans-serif; font-weight: 500;
+  }
+
+  /* ── CONTENT WRAPPER ── */
+  .content { flex: 1; padding: 28px 24px; max-width: 480px; margin: 0 auto; width: 100%; }
+
+  /* ── WELCOME SCREEN ── */
+  .hero-bg {
+    position: relative; overflow: hidden;
+    background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(245,166,35,0.1) 0%, transparent 70%);
+    padding: 40px 24px 32px;
+  }
+  .hero-emoji { font-size: 52px; margin-bottom: 18px; display: block; }
+  .hero-title {
+    font-family: 'Chakra Petch', sans-serif; font-size: 32px; font-weight: 800;
+    line-height: 1.15; color: var(--text); margin-bottom: 12px;
+  }
+  .hero-title em { color: var(--amber); font-style: normal; }
+  .hero-sub { color: var(--text-dim); font-size: 15px; line-height: 1.6; margin-bottom: 28px; }
+  
+  .stat-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 32px; }
+  .stat-card {
+    background: var(--bg3); border: 1px solid var(--border-dim);
+    border-radius: var(--radius-sm); padding: 14px 10px; text-align: center;
+  }
+  .stat-val { font-family: 'Chakra Petch', sans-serif; font-size: 20px; font-weight: 700; color: var(--amber); }
+  .stat-label { font-size: 11px; color: var(--text-dim); margin-top: 2px; }
+
+  /* ── BUTTONS ── */
+  .btn {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    width: 100%; padding: 15px 20px; border-radius: var(--radius-sm);
+    font-family: 'Be Vietnam Pro', sans-serif; font-size: 15px; font-weight: 600;
+    border: none; cursor: pointer; transition: all 0.2s ease;
+  }
+  .btn-primary {
+    background: var(--amber); color: #1a1100;
+  }
+  .btn-primary:hover { background: #ffb733; transform: translateY(-1px); box-shadow: 0 8px 24px rgba(245,166,35,0.3); }
+  .btn-secondary {
+    background: var(--bg3); color: var(--text); border: 1px solid var(--border-dim);
+  }
+  .btn-secondary:hover { border-color: var(--border); background: var(--bg2); }
+  .btn-ghost { background: none; color: var(--text-dim); width: auto; padding: 10px 0; }
+  .btn-ghost:hover { color: var(--text); }
+  .btn-sm { padding: 10px 16px; font-size: 13px; border-radius: 8px; }
+  .btn + .btn { margin-top: 10px; }
+
+  /* ── FORM ELEMENTS ── */
+  .form-group { margin-bottom: 18px; }
+  .form-label { font-size: 12px; font-weight: 600; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px; display: block; }
+  .form-input {
+    width: 100%; padding: 13px 16px;
+    background: var(--bg3); border: 1px solid var(--border-dim);
+    border-radius: var(--radius-sm); color: var(--text);
+    font-family: 'Be Vietnam Pro', sans-serif; font-size: 15px;
+    outline: none; transition: border-color 0.2s;
+  }
+  .form-input:focus { border-color: var(--amber); }
+  .form-input::placeholder { color: var(--text-muted); }
+  .form-select {
+    appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238a7f72' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 14px center;
+  }
+  .pill-group { display: flex; gap: 8px; flex-wrap: wrap; }
+  .pill {
+    padding: 8px 14px; border-radius: 20px; font-size: 13px; font-weight: 500;
+    border: 1px solid var(--border-dim); background: var(--bg3); color: var(--text-dim);
+    cursor: pointer; transition: all 0.18s;
+  }
+  .pill.selected { background: var(--amber-glow); border-color: var(--amber); color: var(--amber); }
+
+  /* ── SECTION HEADER ── */
+  .section-head { margin-bottom: 22px; }
+  .section-head h2 { font-size: 22px; font-weight: 700; margin-bottom: 5px; }
+  .section-head p { font-size: 14px; color: var(--text-dim); line-height: 1.5; }
+
+  /* ── RISK SCORE ── */
+  .risk-ring-wrap { display: flex; flex-direction: column; align-items: center; margin: 24px 0; }
+  .risk-ring {
+    position: relative; width: 140px; height: 140px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .risk-ring svg { position: absolute; top: 0; left: 0; transform: rotate(-90deg); }
+  .risk-ring-inner { text-align: center; z-index: 1; }
+  .risk-score-val { font-family: 'Chakra Petch', sans-serif; font-size: 36px; font-weight: 800; }
+  .risk-score-label { font-size: 11px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.06em; }
+  .risk-factors { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; }
+  .risk-factor-card {
+    background: var(--bg3); border: 1px solid var(--border-dim);
+    border-radius: var(--radius-sm); padding: 12px 14px;
+  }
+  .rf-label { font-size: 11px; color: var(--text-dim); margin-bottom: 4px; }
+  .rf-val { font-size: 14px; font-weight: 600; }
+  .rf-val.high { color: var(--red); }
+  .rf-val.medium { color: var(--amber); }
+  .rf-val.low { color: var(--green); }
+
+  /* ── PLAN CARDS ── */
+  .plan-card {
+    background: var(--bg3); border: 1.5px solid var(--border-dim);
+    border-radius: var(--radius); padding: 20px;
+    margin-bottom: 14px; cursor: pointer; transition: all 0.2s;
+    position: relative;
+  }
+  .plan-card:hover { border-color: var(--border); }
+  .plan-card.selected { border-color: var(--amber); background: var(--amber-glow); }
+  .plan-card.featured { border-color: rgba(91,156,246,0.5); }
+  .plan-badge {
+    position: absolute; top: -1px; right: 18px;
+    font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em;
+    padding: 3px 10px; border-radius: 0 0 8px 8px;
+  }
+  .plan-badge.recommended { background: var(--blue); color: #fff; }
+  .plan-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+  .plan-name { font-family: 'Chakra Petch', sans-serif; font-size: 17px; font-weight: 700; }
+  .plan-price { text-align: right; }
+  .plan-price-val { font-family: 'Chakra Petch', sans-serif; font-size: 22px; font-weight: 800; color: var(--amber); }
+  .plan-price-sub { font-size: 11px; color: var(--text-dim); }
+  .plan-coverage { font-size: 13px; color: var(--text-dim); margin-bottom: 12px; }
+  .plan-features { list-style: none; }
+  .plan-features li { font-size: 13px; color: var(--text-dim); padding: 3px 0; display: flex; gap: 8px; align-items: center; }
+  .plan-features li::before { content: '✓'; color: var(--green); font-weight: 700; flex-shrink: 0; }
+
+  /* ── DASHBOARD ── */
+  .dash-hero {
+    background: linear-gradient(135deg, var(--bg3) 0%, rgba(245,166,35,0.08) 100%);
+    border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 22px; margin-bottom: 20px;
+  }
+  .dash-greeting { font-size: 13px; color: var(--text-dim); margin-bottom: 4px; }
+  .dash-name { font-family: 'Chakra Petch', sans-serif; font-size: 24px; font-weight: 800; margin-bottom: 16px; }
+  .dash-policy-row { display: flex; justify-content: space-between; align-items: center; }
+  .dash-policy-tag {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 12px; font-weight: 600;
+    background: var(--green-dim); color: var(--green);
+    padding: 5px 12px; border-radius: 20px; border: 1px solid rgba(76,175,125,0.3);
+  }
+  .pulse { width: 7px; height: 7px; border-radius: 50%; background: var(--green); animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+  .dash-expiry { font-size: 12px; color: var(--text-dim); }
+
+  .metrics-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+  .metric-card {
+    background: var(--bg3); border: 1px solid var(--border-dim);
+    border-radius: var(--radius-sm); padding: 16px;
+  }
+  .metric-icon { font-size: 22px; margin-bottom: 8px; }
+  .metric-val { font-family: 'Chakra Petch', sans-serif; font-size: 22px; font-weight: 700; }
+  .metric-label { font-size: 11px; color: var(--text-dim); margin-top: 2px; }
+
+  .section-title { font-family: 'Chakra Petch', sans-serif; font-size: 16px; font-weight: 700; margin-bottom: 14px; }
+
+  /* ── WEATHER CARD ── */
+  .weather-card {
+    background: var(--bg3); border: 1px solid var(--border-dim);
+    border-radius: var(--radius); padding: 18px; margin-bottom: 20px;
+  }
+  .weather-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+  .weather-title { font-size: 14px; font-weight: 600; color: var(--text-dim); }
+  .weather-status { font-size: 12px; color: var(--green); }
+  .trigger-row { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border-dim); }
+  .trigger-row:last-child { border-bottom: none; }
+  .trigger-icon { font-size: 20px; width: 28px; text-align: center; flex-shrink: 0; }
+  .trigger-info { flex: 1; }
+  .trigger-name { font-size: 13px; font-weight: 500; }
+  .trigger-val { font-size: 12px; color: var(--text-dim); }
+  .trigger-bar-wrap { width: 80px; }
+  .trigger-bar-bg { height: 4px; background: var(--bg2); border-radius: 2px; overflow: hidden; }
+  .trigger-bar-fill { height: 100%; border-radius: 2px; transition: width 0.8s ease; }
+  .bar-safe { background: var(--green); }
+  .bar-warn { background: var(--amber); }
+  .bar-alert { background: var(--red); }
+
+  /* ── CLAIM SCREEN ── */
+  .alert-banner {
+    background: rgba(224,92,92,0.12); border: 1px solid rgba(224,92,92,0.4);
+    border-radius: var(--radius); padding: 18px;
+    margin-bottom: 20px; animation: alertPulse 3s ease infinite;
+  }
+  @keyframes alertPulse { 0%,100%{border-color:rgba(224,92,92,0.4)}50%{border-color:rgba(224,92,92,0.8)} }
+  .alert-top { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+  .alert-icon { font-size: 24px; }
+  .alert-title { font-family: 'Chakra Petch', sans-serif; font-size: 16px; font-weight: 700; color: var(--red); }
+  .alert-body { font-size: 13px; color: var(--text-dim); line-height: 1.5; }
+
+  .payout-calc {
+    background: var(--bg3); border: 1px solid var(--border-dim);
+    border-radius: var(--radius); padding: 20px; margin-bottom: 20px;
+  }
+  .calc-row { display: flex; justify-content: space-between; padding: 8px 0; font-size: 14px; }
+  .calc-row:not(:last-child) { border-bottom: 1px solid var(--border-dim); }
+  .calc-row.total { font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 17px; }
+  .calc-row.total .calc-right { color: var(--green); }
+  .calc-left { color: var(--text-dim); }
+  .calc-right { font-weight: 500; }
+
+  .aegis-panel {
+    background: rgba(91,156,246,0.07); border: 1px solid rgba(91,156,246,0.25);
+    border-radius: var(--radius); padding: 16px; margin-bottom: 20px;
+  }
+  .aegis-title { font-size: 13px; font-weight: 700; color: var(--blue); margin-bottom: 12px; display: flex; align-items: center; gap: 6px; }
+  .aegis-layer { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+  .layer-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .layer-dot.pass { background: var(--green); }
+  .layer-dot.processing { background: var(--amber); animation: pulse 1s infinite; }
+  .layer-label { font-size: 12px; flex: 1; }
+  .layer-status { font-size: 11px; font-weight: 600; }
+  .layer-status.pass { color: var(--green); }
+  .layer-status.processing { color: var(--amber); }
+
+  /* ── CLAIM SUCCESS ── */
+  .success-wrap { text-align: center; padding: 40px 0; }
+  .success-circle {
+    width: 90px; height: 90px; border-radius: 50%;
+    background: var(--green-dim); border: 2px solid var(--green);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 42px; margin: 0 auto 24px;
+    animation: popIn 0.5s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  @keyframes popIn { from{transform:scale(0);opacity:0} to{transform:scale(1);opacity:1} }
+  .success-amount {
+    font-family: 'Chakra Petch', sans-serif; font-size: 42px; font-weight: 800;
+    color: var(--green); margin: 12px 0 6px;
+  }
+  .success-msg { font-size: 14px; color: var(--text-dim); margin-bottom: 8px; }
+  .success-sub { font-size: 12px; color: var(--text-muted); }
+
+  /* ── HISTORY ── */
+  .history-item {
+    display: flex; align-items: center; gap: 14px;
+    padding: 14px 0; border-bottom: 1px solid var(--border-dim);
+  }
+  .history-icon {
+    width: 40px; height: 40px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; flex-shrink: 0;
+  }
+  .history-icon.rain { background: rgba(91,156,246,0.15); }
+  .history-icon.heat { background: rgba(245,166,35,0.15); }
+  .history-info { flex: 1; }
+  .history-event { font-size: 14px; font-weight: 500; }
+  .history-date { font-size: 12px; color: var(--text-dim); }
+  .history-amount { font-family: 'Chakra Petch', sans-serif; font-size: 16px; font-weight: 700; color: var(--green); }
+
+  /* ── BOTTOM NAV ── */
+  .bottom-nav {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    background: var(--bg); border-top: 1px solid var(--border-dim);
+    display: flex; z-index: 200;
+  }
+  .nav-item {
+    flex: 1; display: flex; flex-direction: column; align-items: center;
+    padding: 10px 0 12px; cursor: pointer; transition: color 0.2s;
+    color: var(--text-muted); font-size: 10px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.05em; gap: 4px;
+    background: none; border: none;
+  }
+  .nav-item.active { color: var(--amber); }
+  .nav-icon { font-size: 20px; }
+
+  /* ── PROGRESS BAR ── */
+  .progress-wrap { display: flex; gap: 6px; margin-bottom: 28px; }
+  .progress-step { flex: 1; height: 3px; border-radius: 2px; background: var(--bg3); transition: background 0.3s; }
+  .progress-step.done { background: var(--amber); }
+  .progress-step.active { background: var(--amber); opacity: 0.5; }
+
+  /* ── DIVIDER ── */
+  .divider { height: 1px; background: var(--border-dim); margin: 20px 0; }
+  .or-divider { display: flex; align-items: center; gap: 14px; margin: 18px 0; color: var(--text-muted); font-size: 12px; }
+  .or-divider::before, .or-divider::after { content: ''; flex: 1; height: 1px; background: var(--border-dim); }
+
+  .spacer { height: 90px; }
+
+  /* ── TOAST ── */
+  .toast {
+    position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%) translateY(20px);
+    background: var(--bg3); border: 1px solid var(--border);
+    padding: 12px 20px; border-radius: 30px; font-size: 13px; font-weight: 500;
+    color: var(--text); opacity: 0; transition: all 0.3s; z-index: 999;
+    white-space: nowrap; max-width: 90vw;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  .upi-row { display: flex; gap: 10px; }
+  .upi-row .form-input { flex: 1; }
+  .upi-tag {
+    background: var(--bg3); border: 1px solid var(--border-dim);
+    border-radius: var(--radius-sm); padding: 0 14px;
+    display: flex; align-items: center; color: var(--text-dim); font-size: 14px;
+    white-space: nowrap;
+  }
+
+  .info-box {
+    background: rgba(91,156,246,0.08); border: 1px solid rgba(91,156,246,0.2);
+    border-radius: var(--radius-sm); padding: 14px 16px;
+    font-size: 13px; color: var(--text-dim); line-height: 1.5; margin-bottom: 18px;
+  }
+  .info-box strong { color: var(--blue); }
+
+  /* Payment loader */
+  .spinner {
+    width: 28px; height: 28px; border: 2px solid rgba(245,166,35,0.3);
+    border-top-color: var(--amber); border-radius: 50%;
+    animation: spin 0.8s linear infinite; margin: 0 auto 16px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ══ PHASE 2 STYLES ══ */
+  :root { --purple: #a78bfa; --teal: #2dd4bf; }
+
+  /* Platform sync */
+  .platform-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+  .platform-card {
+    background: var(--bg3); border: 1.5px solid var(--border-dim);
+    border-radius: var(--radius); padding: 18px 10px; text-align: center; cursor: pointer; transition: all 0.2s;
+  }
+  .platform-card:hover { border-color: var(--border); }
+  .platform-card.selected { border-color: var(--amber); background: var(--amber-glow); }
+  .platform-card .p-emoji { font-size: 28px; margin-bottom: 8px; display: block; }
+  .platform-card .p-name { font-size: 13px; font-weight: 700; font-family: 'Chakra Petch', sans-serif; }
+  .platform-card .p-sub { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+  .sync-data-card {
+    background: var(--bg3); border: 1px solid var(--green); border-radius: var(--radius);
+    padding: 18px; margin-bottom: 20px; animation: fadeIn 0.4s ease;
+  }
+  .sync-data-row { display: flex; justify-content: space-between; padding: 8px 0; font-size: 14px; }
+  .sync-data-row:not(:last-child) { border-bottom: 1px solid var(--border-dim); }
+  .sync-label { color: var(--text-dim); }
+  .sync-val { font-weight: 600; color: var(--text); }
+  .sync-status-bar {
+    background: rgba(76,175,125,0.08); border: 1px solid rgba(76,175,125,0.3);
+    border-radius: var(--radius-sm); padding: 12px 14px;
+    font-size: 12px; color: var(--green); display: flex; align-items: center; gap: 8px;
+    margin-bottom: 18px;
+  }
+
+  /* Zone hex map */
+  .hex-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-bottom: 20px; }
+  .hex-cell {
+    aspect-ratio: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    border-radius: 14px; border: 1.5px solid var(--border-dim); cursor: pointer; transition: all 0.2s;
+    padding: 12px 6px; text-align: center; position: relative;
+  }
+  .hex-cell:hover { transform: scale(1.03); }
+  .hex-cell.selected { border-width: 2px; box-shadow: 0 0 16px rgba(245,166,35,0.2); }
+  .hex-cell.risk-high { background: rgba(224,92,92,0.08); border-color: rgba(224,92,92,0.3); }
+  .hex-cell.risk-high.selected { border-color: var(--red); }
+  .hex-cell.risk-med { background: rgba(245,166,35,0.07); border-color: rgba(245,166,35,0.25); }
+  .hex-cell.risk-med.selected { border-color: var(--amber); }
+  .hex-cell.risk-low { background: rgba(76,175,125,0.07); border-color: rgba(76,175,125,0.25); }
+  .hex-cell.risk-low.selected { border-color: var(--green); }
+  .hex-name { font-size: 12px; font-weight: 700; font-family: 'Chakra Petch', sans-serif; margin-bottom: 4px; }
+  .hex-risk { font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; font-weight: 600; }
+  .hex-risk.high { color: var(--red); }
+  .hex-risk.med { color: var(--amber); }
+  .hex-risk.low { color: var(--green); }
+  .zone-info-panel {
+    background: var(--bg3); border: 1px solid var(--border-dim); border-radius: var(--radius);
+    padding: 16px; margin-bottom: 20px; transition: all 0.3s;
+  }
+  .zone-info-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 12px; }
+  .zone-info-item { text-align: center; }
+  .zone-info-val { font-family: 'Chakra Petch', sans-serif; font-size: 18px; font-weight: 700; }
+  .zone-info-label { font-size: 10px; color: var(--text-muted); margin-top: 2px; text-transform: uppercase; letter-spacing: 0.05em; }
+
+  /* NEXUS Engine */
+  .nexus-header {
+    background: linear-gradient(135deg, rgba(167,139,250,0.1), rgba(91,156,246,0.08));
+    border: 1px solid rgba(167,139,250,0.3); border-radius: var(--radius);
+    padding: 20px; margin-bottom: 20px; text-align: center;
+  }
+  .nexus-logo { font-family: 'Chakra Petch', sans-serif; font-size: 28px; font-weight: 800; color: var(--purple); letter-spacing: 0.05em; }
+  .nexus-sub { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.08em; margin-top: 4px; }
+  .nexus-tag { display: inline-block; font-size: 10px; background: rgba(167,139,250,0.15); color: var(--purple); padding: 3px 10px; border-radius: 20px; border: 1px solid rgba(167,139,250,0.3); margin-top: 8px; }
+  .signal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 18px; }
+  .signal-card {
+    background: var(--bg3); border: 1px solid var(--border-dim); border-radius: var(--radius-sm);
+    padding: 14px; position: relative; overflow: hidden;
+  }
+  .signal-icon { font-size: 18px; margin-bottom: 6px; }
+  .signal-name { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
+  .signal-val { font-size: 12px; color: var(--text-dim); margin-bottom: 8px; }
+  .signal-impact {
+    font-family: 'Chakra Petch', sans-serif; font-size: 15px; font-weight: 700;
+    padding: 3px 8px; border-radius: 6px; display: inline-block;
+  }
+  .impact-add { background: rgba(224,92,92,0.15); color: var(--red); }
+  .impact-sub { background: rgba(76,175,125,0.15); color: var(--green); }
+  .nexus-total-card {
+    background: linear-gradient(135deg, var(--bg3), rgba(167,139,250,0.07));
+    border: 1px solid rgba(167,139,250,0.25); border-radius: var(--radius);
+    padding: 20px; margin-bottom: 18px;
+  }
+  .nexus-calc-row { display: flex; justify-content: space-between; font-size: 13px; padding: 6px 0; }
+  .nexus-calc-row:not(:last-child) { border-bottom: 1px solid var(--border-dim); }
+  .nexus-final { font-family: 'Chakra Petch', sans-serif; font-size: 24px; font-weight: 800; color: var(--purple); }
+  .nexus-compare { display: flex; justify-content: center; gap: 24px; padding: 14px; background: rgba(76,175,125,0.06); border-radius: var(--radius-sm); border: 1px solid rgba(76,175,125,0.2); margin-bottom: 18px; }
+  .nexus-cmp-item { text-align: center; }
+  .nexus-cmp-val { font-family: 'Chakra Petch', sans-serif; font-size: 20px; font-weight: 700; }
+  .nexus-cmp-label { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+
+  /* Policy Management */
+  .policy-hero {
+    background: linear-gradient(135deg, var(--bg3), rgba(245,166,35,0.06));
+    border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 22px; margin-bottom: 18px;
+  }
+  .policy-status-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+  .coverage-bar-wrap { margin-bottom: 6px; }
+  .coverage-bar-bg { height: 6px; background: var(--bg2); border-radius: 3px; overflow: hidden; }
+  .coverage-bar-fill { height: 100%; border-radius: 3px; background: linear-gradient(90deg, var(--amber), var(--green)); transition: width 1s ease; }
+  .coverage-label { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-muted); margin-top: 4px; }
+  .policy-detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 18px; }
+  .policy-detail-item { background: var(--bg3); border: 1px solid var(--border-dim); border-radius: var(--radius-sm); padding: 12px 14px; }
+  .pd-label { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
+  .pd-val { font-size: 14px; font-weight: 600; }
+  .quick-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+  .quick-action-btn {
+    background: var(--bg3); border: 1px solid var(--border-dim); border-radius: var(--radius-sm);
+    padding: 14px 12px; display: flex; flex-direction: column; align-items: center; gap: 6px;
+    cursor: pointer; transition: all 0.2s; text-align: center;
+  }
+  .quick-action-btn:hover { border-color: var(--amber); background: var(--amber-glow); }
+  .qa-icon { font-size: 22px; }
+  .qa-label { font-size: 12px; font-weight: 600; }
+  .qa-sub { font-size: 10px; color: var(--text-muted); }
+  .trigger-toggle-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--border-dim); }
+  .tt-info { display: flex; align-items: center; gap: 10px; }
+  .tt-icon { font-size: 18px; width: 30px; text-align: center; }
+  .tt-name { font-size: 14px; font-weight: 500; }
+  .tt-src { font-size: 11px; color: var(--text-muted); }
+  .toggle-switch { width: 36px; height: 20px; background: var(--green); border-radius: 10px; position: relative; cursor: pointer; flex-shrink: 0; transition: background 0.2s; }
+  .toggle-switch::after { content: ''; position: absolute; top: 3px; right: 3px; width: 14px; height: 14px; background: white; border-radius: 50%; transition: right 0.2s; }
+  .toggle-switch.off { background: var(--bg2); }
+  .toggle-switch.off::after { right: auto; left: 3px; }
+
+  /* Triggers Hub */
+  .trigger-monitor-card {
+    background: var(--bg3); border: 1px solid var(--border-dim);
+    border-radius: var(--radius); padding: 16px; margin-bottom: 12px; position: relative; overflow: hidden;
+  }
+  .trigger-monitor-card.alert { border-color: rgba(245,166,35,0.6); animation: alertPulse 2s ease infinite; }
+  .trigger-monitor-card.triggered { border-color: rgba(224,92,92,0.7); animation: alertPulse 1.5s ease infinite; }
+  .tmc-top { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+  .tmc-emoji { font-size: 22px; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 10px; flex-shrink: 0; }
+  .tmc-title { font-size: 14px; font-weight: 700; }
+  .tmc-source { font-size: 11px; color: var(--text-muted); }
+  .tmc-status-badge { margin-left: auto; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; padding: 4px 10px; border-radius: 20px; }
+  .status-monitoring { background: rgba(76,175,125,0.15); color: var(--green); }
+  .status-alert { background: rgba(245,166,35,0.15); color: var(--amber); }
+  .status-triggered { background: rgba(224,92,92,0.15); color: var(--red); }
+  .tmc-meter { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+  .tmc-meter-track { flex: 1; height: 5px; background: var(--bg2); border-radius: 3px; overflow: hidden; }
+  .tmc-meter-fill { height: 100%; border-radius: 3px; transition: width 0.8s ease, background 0.4s; }
+  .tmc-vals { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-muted); }
+  .city-feed {
+    background: var(--bg2); border: 1px solid var(--border-dim); border-radius: var(--radius-sm);
+    padding: 12px; margin-top: 16px; overflow: hidden; max-height: 120px;
+  }
+  .city-feed-title { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin-bottom: 8px; font-weight: 700; }
+  .feed-item { font-size: 12px; color: var(--text-dim); padding: 4px 0; display: flex; gap: 8px; align-items: center; }
+  .feed-dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+
+  /* Claims Management */
+  .claims-tab-bar { display: flex; background: var(--bg3); border-radius: var(--radius-sm); padding: 4px; margin-bottom: 18px; }
+  .claims-tab { flex: 1; text-align: center; padding: 9px 0; font-size: 13px; font-weight: 600; border-radius: 8px; cursor: pointer; color: var(--text-muted); transition: all 0.2s; }
+  .claims-tab.active { background: var(--amber); color: #1a1100; }
+  .aegis-banner {
+    background: linear-gradient(135deg, rgba(91,156,246,0.08), rgba(167,139,250,0.06));
+    border: 1px solid rgba(91,156,246,0.25); border-radius: var(--radius-sm);
+    padding: 14px 16px; margin-bottom: 18px; display: flex; align-items: center; gap: 12px;
+  }
+  .aegis-score-big { font-family: 'Chakra Petch', sans-serif; font-size: 28px; font-weight: 800; color: var(--green); }
+  .aegis-info-label { font-size: 12px; font-weight: 600; color: var(--blue); }
+  .aegis-info-sub { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+  .claim-card-full {
+    background: var(--bg3); border: 1px solid var(--border-dim); border-radius: var(--radius);
+    padding: 16px; margin-bottom: 12px;
+  }
+  .claim-card-full.active { border-color: rgba(245,166,35,0.4); }
+  .ccf-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+  .ccf-type { display: flex; align-items: center; gap: 8px; }
+  .ccf-emoji { font-size: 20px; }
+  .ccf-name { font-size: 14px; font-weight: 600; }
+  .ccf-date { font-size: 11px; color: var(--text-muted); }
+  .ccf-amount { font-family: 'Chakra Petch', sans-serif; font-size: 18px; font-weight: 800; color: var(--green); }
+  .claim-timeline { display: flex; align-items: center; gap: 0; margin-top: 10px; }
+  .ct-step { display: flex; flex-direction: column; align-items: center; flex: 1; }
+  .ct-dot { width: 10px; height: 10px; border-radius: 50%; margin-bottom: 4px; }
+  .ct-dot.done { background: var(--green); }
+  .ct-dot.active { background: var(--amber); animation: pulse 1.5s infinite; }
+  .ct-dot.pending { background: var(--bg2); border: 1.5px solid var(--text-muted); }
+  .ct-line { flex: 1; height: 2px; margin-bottom: 14px; }
+  .ct-line.done { background: var(--green); }
+  .ct-line.pending { background: var(--border-dim); }
+  .ct-label { font-size: 9px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; text-align: center; }
+  .zero-touch-badge {
+    display: flex; align-items: center; gap: 6px; padding: 8px 12px;
+    background: rgba(76,175,125,0.1); border-radius: 20px; border: 1px solid rgba(76,175,125,0.25);
+    font-size: 12px; color: var(--green); font-weight: 600; margin-bottom: 16px;
+  }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════
+     SCREEN 0: WELCOME
+══════════════════════════════════════════ -->
+<div class="screen active" id="s-welcome">
+  <div class="topbar">
+    <div class="logo">
+      <div class="logo-icon">⚔️</div>
+      <div class="logo-text">Gaashaanka<span>Pay</span></div>
+    </div>
+    <div class="badge">Pilot · Chennai</div>
+  </div>
+  <div class="hero-bg">
+    <div style="max-width:480px;margin:0 auto;padding:0 24px;">
+      <span class="hero-emoji">⚔️</span>
+      <h1 class="hero-title">Rain stops.<br><em>Pay shouldn't.</em></h1>
+      <p class="hero-sub">Zero-wait income cover for Zomato & Swiggy riders. Triggered by real weather — not forms. Money in your UPI before the roads clear.</p>
+      <div class="stat-row">
+        <div class="stat-card"><div class="stat-val">₹0</div><div class="stat-label">Paperwork</div></div>
+        <div class="stat-card"><div class="stat-val">10m</div><div class="stat-label">Payout time</div></div>
+        <div class="stat-card"><div class="stat-val">₹39</div><div class="stat-label">Starts at/wk</div></div>
+      </div>
+      <button class="btn btn-primary" onclick="go('s-onboard')">Start My Cover →</button>
+      <button class="btn btn-secondary" onclick="go('s-dashboard')">See Live Demo</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     SCREEN 1: ONBOARDING
+══════════════════════════════════════════ -->
+<div class="screen" id="s-onboard">
+  <div class="topbar">
+    <div class="logo">
+      <div class="logo-icon">⚔️</div>
+      <div class="logo-text">Gaashaanka<span>Pay</span></div>
+    </div>
+    <button class="btn btn-ghost" onclick="go('s-welcome')" style="width:auto;padding:0;font-size:22px;">←</button>
+  </div>
+  <div class="content">
+    <div class="progress-wrap">
+      <div class="progress-step done"></div>
+      <div class="progress-step active"></div>
+      <div class="progress-step"></div>
+      <div class="progress-step"></div>
+    </div>
+    <div class="section-head">
+      <h2>Set up your GaashaankaPay</h2>
+      <p>Under 2 minutes. We'll price your cover based on your actual zone risk.</p>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Full Name</label>
+      <input class="form-input" type="text" placeholder="Arjun Selvam" id="inp-name" value="Arjun Selvam">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Mobile Number</label>
+      <input class="form-input" type="tel" placeholder="98765 43210" value="98765 43210">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Platform</label>
+      <select class="form-input form-select">
+        <option>Zomato</option>
+        <option>Swiggy</option>
+        <option>Both</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Primary Delivery Zone</label>
+      <select class="form-input form-select" id="inp-zone">
+        <option value="velachery">Velachery (Flood-Prone) ⚠️</option>
+        <option value="nungambakkam">Nungambakkam (Low Risk)</option>
+        <option value="tambaram">Tambaram (Medium Risk)</option>
+        <option value="adyar">Adyar (Medium Risk)</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Hours per week</label>
+      <div class="pill-group" id="hours-group">
+        <div class="pill" onclick="selectPill('hours-group',this)">< 20 hrs</div>
+        <div class="pill selected" onclick="selectPill('hours-group',this)">20–40 hrs</div>
+        <div class="pill" onclick="selectPill('hours-group',this)">40+ hrs</div>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Average Daily Earnings</label>
+      <select class="form-input form-select" id="inp-earnings">
+        <option value="500">₹400–₹600</option>
+        <option value="750" selected>₹600–₹900</option>
+        <option value="1000">₹900–₹1200</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">UPI ID</label>
+      <div class="upi-row">
+        <input class="form-input" type="text" placeholder="arjun" value="arjun.selvam">
+        <div class="upi-tag">@upi</div>
+      </div>
+    </div>
+    <button class="btn btn-primary" onclick="go('s-platform')">Next: Connect Platform →</button>
+    <div class="spacer"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     SCREEN 2: RISK PROFILE
+══════════════════════════════════════════ -->
+<div class="screen" id="s-risk">
+  <div class="topbar">
+    <div class="logo">
+      <div class="logo-icon">⚔️</div>
+      <div class="logo-text">Gaashaanka<span>Pay</span></div>
+    </div>
+    <button class="btn btn-ghost" onclick="go('s-onboard')" style="width:auto;padding:0;font-size:22px;">←</button>
+  </div>
+  <div class="content">
+    <div class="progress-wrap">
+      <div class="progress-step done"></div>
+      <div class="progress-step done"></div>
+      <div class="progress-step active"></div>
+      <div class="progress-step"></div>
+    </div>
+    <div class="section-head">
+      <h2>Your Zone Risk Report</h2>
+      <p>Computed from IMD flood maps, seasonal disruption logs, and your delivery history.</p>
+    </div>
+
+    <div class="risk-ring-wrap">
+      <div class="risk-ring">
+        <svg width="140" height="140" viewBox="0 0 140 140">
+          <circle cx="70" cy="70" r="58" fill="none" stroke="#1e1a16" stroke-width="12"/>
+          <circle id="risk-arc" cx="70" cy="70" r="58" fill="none" stroke="#f5a623" stroke-width="12"
+            stroke-linecap="round" stroke-dasharray="364.4" stroke-dashoffset="364.4"/>
+        </svg>
+        <div class="risk-ring-inner">
+          <div class="risk-score-val" id="risk-num" style="color:var(--amber)">0</div>
+          <div class="risk-score-label">Risk Score</div>
+        </div>
+      </div>
+      <div style="margin-top:10px;font-size:13px;font-weight:600;color:var(--amber)" id="risk-label">Calculating...</div>
+    </div>
+
+    <div class="risk-factors">
+      <div class="risk-factor-card">
+        <div class="rf-label">Zone Risk</div>
+        <div class="rf-val high" id="rf-zone">High (1.3×)</div>
+      </div>
+      <div class="risk-factor-card">
+        <div class="rf-label">Season</div>
+        <div class="rf-val medium" id="rf-season">Monsoon (1.35×)</div>
+      </div>
+      <div class="risk-factor-card">
+        <div class="rf-label">Activity Level</div>
+        <div class="rf-val medium" id="rf-activity">Regular (20–40h)</div>
+      </div>
+      <div class="risk-factor-card">
+        <div class="rf-label">Payout History</div>
+        <div class="rf-val low" id="rf-history">Clean (0.95×)</div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+    <div class="info-box">
+      <strong>AEGIS verification layer</strong> is active on your account. Riders with clean claim history get up to 10% discount on next week's cover.
+    </div>
+
+    <button class="btn btn-primary" onclick="go('s-plans')">View My Plans →</button>
+    <div class="spacer"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     SCREEN 3: PLAN SELECTION
+══════════════════════════════════════════ -->
+<div class="screen" id="s-plans">
+  <div class="topbar">
+    <div class="logo">
+      <div class="logo-icon">⚔️</div>
+      <div class="logo-text">Gaashaanka<span>Pay</span></div>
+    </div>
+    <button class="btn btn-ghost" onclick="go('s-risk')" style="width:auto;padding:0;font-size:22px;">←</button>
+  </div>
+  <div class="content">
+    <div class="progress-wrap">
+      <div class="progress-step done"></div>
+      <div class="progress-step done"></div>
+      <div class="progress-step done"></div>
+      <div class="progress-step active"></div>
+    </div>
+    <div class="section-head">
+      <h2>Pick Your Cover</h2>
+      <p>Personalised for Velachery · July Monsoon Season</p>
+    </div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;">
+      <div style="font-size:12px;color:var(--text-muted);">NEXUS AI-priced · 7 live signals</div>
+      <button class="btn btn-ghost" style="width:auto;padding:6px 12px;font-size:12px;color:var(--amber);border:1px solid var(--border);border-radius:8px;" onclick="go('s-nexus')">🧠 See Pricing Logic</button>
+    </div>
+
+    <div class="plan-card" id="plan-basic" onclick="selectPlan('basic')">
+      <div class="plan-top">
+        <div>
+          <div class="plan-name">Essentials Cover</div>
+          <div class="plan-coverage">50% income replacement</div>
+        </div>
+        <div class="plan-price">
+          <div class="plan-price-val">₹51</div>
+          <div class="plan-price-sub">/week</div>
+        </div>
+      </div>
+      <ul class="plan-features">
+        <li>Rain & flood triggers</li>
+        <li>Up to ₹375/day protected</li>
+        <li>Instant UPI payout</li>
+      </ul>
+    </div>
+
+    <div class="plan-card featured" id="plan-standard" onclick="selectPlan('standard')">
+      <div class="plan-badge recommended">Recommended</div>
+      <div class="plan-top">
+        <div>
+          <div class="plan-name">Plus Cover</div>
+          <div class="plan-coverage">65% income replacement</div>
+        </div>
+        <div class="plan-price">
+          <div class="plan-price-val">₹108</div>
+          <div class="plan-price-sub">/week</div>
+        </div>
+      </div>
+      <ul class="plan-features">
+        <li>Rain, flood, extreme heat triggers</li>
+        <li>AQI & civic disruption covered</li>
+        <li>Up to ₹488/day protected</li>
+        <li>AEGIS fraud protection</li>
+      </ul>
+    </div>
+
+    <div class="plan-card" id="plan-pro" onclick="selectPlan('pro')">
+      <div class="plan-top">
+        <div>
+          <div class="plan-name">Max Cover</div>
+          <div class="plan-coverage">75% income replacement</div>
+        </div>
+        <div class="plan-price">
+          <div class="plan-price-val">₹165</div>
+          <div class="plan-price-sub">/week</div>
+        </div>
+      </div>
+      <ul class="plan-features">
+        <li>All triggers covered</li>
+        <li>Up to ₹563/day protected</li>
+        <li>Priority 5-min payout SLA</li>
+        <li>AEGIS + Predictive alerts</li>
+      </ul>
+    </div>
+
+    <div class="info-box" style="margin-top:4px;">
+      All premiums include an <strong>8% reinsurance buffer</strong>. If the whole city floods at once, your payout is still guaranteed — absorbed by our reinsurance partner.
+    </div>
+
+    <button class="btn btn-primary" onclick="go('s-payment')">Activate This Cover →</button>
+    <div class="spacer"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     SCREEN 4: PAYMENT
+══════════════════════════════════════════ -->
+<div class="screen" id="s-payment">
+  <div class="topbar">
+    <div class="logo">
+      <div class="logo-icon">⚔️</div>
+      <div class="logo-text">Gaashaanka<span>Pay</span></div>
+    </div>
+    <button class="btn btn-ghost" onclick="go('s-plans')" style="width:auto;padding:0;font-size:22px;">←</button>
+  </div>
+  <div class="content">
+    <div class="section-head">
+      <h2>Activate Your Cover</h2>
+      <p>Plus Cover · Week of 20 Jul 2026</p>
+    </div>
+
+    <div class="payout-calc">
+      <div class="calc-row"><span class="calc-left">Base premium</span><span class="calc-right">₹65.00</span></div>
+      <div class="calc-row"><span class="calc-left">Zone risk (Velachery 1.3×)</span><span class="calc-right">+₹19.50</span></div>
+      <div class="calc-row"><span class="calc-left">Monsoon season (1.35×)</span><span class="calc-right">+₹25.35</span></div>
+      <div class="calc-row"><span class="calc-left">Clean history discount (0.95×)</span><span class="calc-right" style="color:var(--green)">-₹5.49</span></div>
+      <div class="calc-row total"><span class="calc-left">Total</span><span class="calc-right">₹108 / week</span></div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Pay via UPI</label>
+      <div class="upi-row">
+        <input class="form-input" type="text" value="arjun.selvam" style="flex:1">
+        <div class="upi-tag">@upi</div>
+      </div>
+    </div>
+    <or-divider class="or-divider">or</or-divider>
+    <div class="pill-group" style="margin-bottom:18px;">
+      <div class="pill selected">💳 UPI</div>
+      <div class="pill">🏦 Net Banking</div>
+      <div class="pill">📱 Wallet</div>
+    </div>
+
+    <button class="btn btn-primary" onclick="simulatePayment()">Pay ₹108 & Activate →</button>
+    <div style="text-align:center;margin-top:14px;font-size:12px;color:var(--text-muted)">
+      🔒 Razorpay Test Mode · Cover activates in seconds
+    </div>
+    <div class="spacer"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     SCREEN 5: PAYMENT PROCESSING
+══════════════════════════════════════════ -->
+<div class="screen" id="s-paying">
+  <div class="topbar">
+    <div class="logo">
+      <div class="logo-icon">⚔️</div>
+      <div class="logo-text">Gaashaanka<span>Pay</span></div>
+    </div>
+  </div>
+  <div class="content" style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;text-align:center;">
+    <div class="spinner"></div>
+    <h3 style="font-size:18px;margin-bottom:8px;" id="pay-msg">Processing payment...</h3>
+    <p style="font-size:13px;color:var(--text-dim);">Activating your GaashaankaPay policy</p>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     SCREEN 6: DASHBOARD
+══════════════════════════════════════════ -->
+<div class="screen" id="s-dashboard">
+  <div class="topbar">
+    <div class="logo">
+      <div class="logo-icon">⚔️</div>
+      <div class="logo-text">Gaashaanka<span>Pay</span></div>
+    </div>
+    <div class="badge">🟢 Cover Active</div>
+  </div>
+  <div class="content">
+    <div class="dash-hero">
+      <div class="dash-greeting">Good afternoon,</div>
+      <div class="dash-name">Arjun Selvam 👋</div>
+      <div class="dash-policy-row">
+        <div class="dash-policy-tag"><div class="pulse"></div> ⚔️ Plus Cover Active</div>
+        <div class="dash-expiry">Valid till 27 Jul</div>
+      </div>
+    </div>
+
+    <div class="metrics-grid">
+      <div class="metric-card">
+        <div class="metric-icon">🛡️</div>
+        <div class="metric-val" style="color:var(--green)">₹488</div>
+        <div class="metric-label">Max daily payout</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-icon">💸</div>
+        <div class="metric-val" style="color:var(--amber)">₹487</div>
+        <div class="metric-label">Total paid out</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-icon">📋</div>
+        <div class="metric-val">2</div>
+        <div class="metric-label">Claims this season</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-icon">⭐</div>
+        <div class="metric-val" style="color:var(--amber)">95</div>
+        <div class="metric-label">AEGIS Trust Score</div>
+      </div>
+    </div>
+
+    <div class="section-title">Live Weather Watch</div>
+    <div class="weather-card">
+      <div class="weather-header">
+        <div class="weather-title">Velachery Zone · Real-time</div>
+        <div class="weather-status" id="weather-status">Clear ✓</div>
+      </div>
+      <div class="trigger-row">
+        <div class="trigger-icon">⚔️</div>
+        <div class="trigger-info">
+          <div class="trigger-name">Rainfall</div>
+          <div class="trigger-val" id="rain-val">12mm / 3hrs · Trigger: 50mm</div>
+        </div>
+        <div class="trigger-bar-wrap">
+          <div class="trigger-bar-bg"><div class="trigger-bar-fill bar-safe" id="rain-bar" style="width:24%"></div></div>
+        </div>
+      </div>
+      <div class="trigger-row">
+        <div class="trigger-icon">🌡️</div>
+        <div class="trigger-info">
+          <div class="trigger-name">Temperature</div>
+          <div class="trigger-val" id="temp-val">38°C · Trigger: 42°C</div>
+        </div>
+        <div class="trigger-bar-wrap">
+          <div class="trigger-bar-bg"><div class="trigger-bar-fill bar-warn" id="temp-bar" style="width:68%"></div></div>
+        </div>
+      </div>
+      <div class="trigger-row">
+        <div class="trigger-icon">💨</div>
+        <div class="trigger-info">
+          <div class="trigger-name">AQI</div>
+          <div class="trigger-val" id="aqi-val">142 · Trigger: 300</div>
+        </div>
+        <div class="trigger-bar-wrap">
+          <div class="trigger-bar-bg"><div class="trigger-bar-fill bar-safe" id="aqi-bar" style="width:47%"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-title">Payout History</div>
+    <div class="history-item">
+      <div class="history-icon rain">⚔️</div>
+      <div class="history-info">
+        <div class="history-event">Heavy Rain Trigger</div>
+        <div class="history-date">Jul 14, 2026 · 4 hrs · Auto-released</div>
+      </div>
+      <div class="history-amount">₹243</div>
+    </div>
+    <div class="history-item">
+      <div class="history-icon heat">🌡️</div>
+      <div class="history-info">
+        <div class="history-event">Heat Alert Trigger</div>
+        <div class="history-date">May 5, 2026 · 5 hrs · Auto-released</div>
+      </div>
+      <div class="history-amount">₹244</div>
+    </div>
+
+    <div style="height:20px;"></div>
+    <button class="btn btn-primary" onclick="goClaimDemo()">🌊 Trigger Flood Demo</button>
+    <div class="spacer"></div>
+  </div>
+
+  <div class="bottom-nav">
+    <button class="nav-item active" onclick="go('s-dashboard')">
+      <span class="nav-icon">🏠</span>Home
+    </button>
+    <button class="nav-item" onclick="go('s-policy')">
+      <span class="nav-icon">🛡️</span>Policy
+    </button>
+    <button class="nav-item" onclick="go('s-triggers')">
+      <span class="nav-icon">⚡</span>Triggers
+    </button>
+    <button class="nav-item" onclick="go('s-claims-mgmt')">
+      <span class="nav-icon">📋</span>Claims
+    </button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     SCREEN 7: CLAIM TRIGGERED
+══════════════════════════════════════════ -->
+<div class="screen" id="s-claim">
+  <div class="topbar">
+    <div class="logo">
+      <div class="logo-icon">⚔️</div>
+      <div class="logo-text">Gaashaanka<span>Pay</span></div>
+    </div>
+    <button class="btn btn-ghost" onclick="go('s-dashboard')" style="width:auto;padding:0;font-size:22px;">←</button>
+  </div>
+  <div class="content">
+    <div class="alert-banner">
+      <div class="alert-top">
+        <div class="alert-icon">🌊</div>
+        <div class="alert-title">Flash Flood · Velachery Zone</div>
+      </div>
+      <div class="alert-body">IMD flash flood warning confirmed for your zone. GaashaankaPay auto-detected the threshold breach. Your payout is being processed — stay safe, no action needed.</div>
+    </div>
+
+    <div class="section-title">Your Payout Breakdown</div>
+    <div class="payout-calc">
+      <div class="calc-row"><span class="calc-left">Avg daily earnings</span><span class="calc-right">₹750</span></div>
+      <div class="calc-row"><span class="calc-left">Hourly rate (÷8)</span><span class="calc-right">₹93.75/hr</span></div>
+      <div class="calc-row"><span class="calc-left">Disruption hours</span><span class="calc-right">4 hrs</span></div>
+      <div class="calc-row"><span class="calc-left">Coverage rate (Standard)</span><span class="calc-right">65%</span></div>
+      <div class="calc-row total"><span class="calc-left">Your payout</span><span class="calc-right">₹243.75</span></div>
+    </div>
+
+    <div class="section-title">AEGIS Verification</div>
+    <div class="aegis-panel">
+      <div class="aegis-title">🔷 AEGIS Verification Engine</div>
+      <div class="aegis-layer">
+        <div class="layer-dot pass"></div>
+        <div class="layer-label">Layer 1 · Early-Warning Scan</div>
+        <div class="layer-status pass">PASS</div>
+      </div>
+      <div class="aegis-layer">
+        <div class="layer-dot pass"></div>
+        <div class="layer-label">Layer 2 · Network Graph Check</div>
+        <div class="layer-status pass">PASS</div>
+      </div>
+      <div class="aegis-layer">
+        <div class="layer-dot processing" id="l3-dot"></div>
+        <div class="layer-label">Layer 3 · Peer Verification</div>
+        <div class="layer-status processing" id="l3-status">Verifying...</div>
+      </div>
+      <div class="aegis-layer" style="opacity:0.4" id="l4-row">
+        <div class="layer-dot" style="background:var(--text-muted)"></div>
+        <div class="layer-label">AEGIS Trust Score</div>
+        <div class="layer-status" id="l4-status">Pending...</div>
+      </div>
+    </div>
+
+    <button class="btn btn-primary" onclick="approveClaim()">Release Payout → ₹243.75</button>
+    <div class="spacer"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     SCREEN 8: CLAIM SUCCESS
+══════════════════════════════════════════ -->
+<div class="screen" id="s-success">
+  <div class="topbar">
+    <div class="logo">
+      <div class="logo-icon">⚔️</div>
+      <div class="logo-text">Gaashaanka<span>Pay</span></div>
+    </div>
+  </div>
+  <div class="content">
+    <div class="success-wrap">
+      <div class="success-circle">✅</div>
+      <div style="font-size:14px;color:var(--text-dim)">Payout Approved · Auto-released</div>
+      <div class="success-amount">₹243.75</div>
+      <div class="success-msg">Sent to arjun.selvam@upi</div>
+      <div class="success-sub" style="margin-bottom:8px;">AEGIS Trust Score: <strong style="color:var(--green)">0.92</strong> · Tier 1 Auto-approved</div>
+      <div class="success-sub">No forms. No waiting. Rain stops, cover pays.</div>
+    </div>
+
+    <div class="payout-calc" style="margin-top:0;">
+      <div class="calc-row"><span class="calc-left">Trigger</span><span class="calc-right">Flash Flood · Velachery</span></div>
+      <div class="calc-row"><span class="calc-left">Processing time</span><span class="calc-right" style="color:var(--green)">8 minutes</span></div>
+      <div class="calc-row"><span class="calc-left">AEGIS verdict</span><span class="calc-right" style="color:var(--green)">Auto-approved</span></div>
+      <div class="calc-row"><span class="calc-left">Payment method</span><span class="calc-right">UPI · Instant</span></div>
+    </div>
+
+    <button class="btn btn-primary" onclick="go('s-dashboard')">Return to Home</button>
+    <div class="spacer"></div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- ═══════════════════════════════════════════════════════
+     PHASE 2 · SCREEN A: PLATFORM SYNC (Registration Step 2)
+════════════════════════════════════════════════════════ -->
+<div class="screen" id="s-platform">
+  <div class="topbar">
+    <div class="logo">
+      <div class="logo-icon">⚔️</div>
+      <div class="logo-text">Gaashaanka<span>Pay</span></div>
+    </div>
+    <button class="btn btn-ghost" onclick="go('s-onboard')" style="width:auto;padding:0;font-size:22px;">←</button>
+  </div>
+  <div class="content">
+    <div class="progress-wrap">
+      <div class="progress-step done"></div>
+      <div class="progress-step done"></div>
+      <div class="progress-step active"></div>
+      <div class="progress-step"></div>
+      <div class="progress-step"></div>
+    </div>
+    <div class="section-head">
+      <h2>Connect Your Platform</h2>
+      <p>We pull your verified work history to auto-fill earnings, hours & risk profile — no manual guessing.</p>
+    </div>
+
+    <div class="platform-grid">
+      <div class="platform-card selected" id="plat-swiggy" onclick="selectPlatform('swiggy')">
+        <span class="p-emoji">🟠</span>
+        <div class="p-name">Swiggy</div>
+        <div class="p-sub">Food & Instamart</div>
+      </div>
+      <div class="platform-card" id="plat-zomato" onclick="selectPlatform('zomato')">
+        <span class="p-emoji">🔴</span>
+        <div class="p-name">Zomato</div>
+        <div class="p-sub">Food delivery</div>
+      </div>
+      <div class="platform-card" id="plat-blinkit" onclick="selectPlatform('blinkit')">
+        <span class="p-emoji">🟡</span>
+        <div class="p-name">Blinkit</div>
+        <div class="p-sub">Quick commerce</div>
+      </div>
+    </div>
+
+    <div id="platform-synced" style="display:none;">
+      <div class="sync-status-bar">
+        <span>✅</span> Swiggy API verified · Data encrypted & read-only
+      </div>
+      <div class="sync-data-card">
+        <div style="font-size:12px;font-weight:700;color:var(--green);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:12px;">Pulled from Swiggy Partner API</div>
+        <div class="sync-data-row"><span class="sync-label">Avg weekly earnings</span><span class="sync-val">₹5,250</span></div>
+        <div class="sync-data-row"><span class="sync-label">Hours per week</span><span class="sync-val">48 hrs</span></div>
+        <div class="sync-data-row"><span class="sync-label">Platform rating</span><span class="sync-val">4.2 ★</span></div>
+        <div class="sync-data-row"><span class="sync-label">On platform since</span><span class="sync-val">Feb 2024</span></div>
+        <div class="sync-data-row"><span class="sync-label">Delivery zone</span><span class="sync-val">Velachery–Medavakkam</span></div>
+      </div>
+    </div>
+
+    <div id="platform-syncing" style="display:none;text-align:center;padding:24px 0;">
+      <div class="spinner" style="margin:0 auto 12px;"></div>
+      <div id="sync-msg" style="font-size:14px;font-weight:600;color:var(--text);">Connecting to Swiggy API...</div>
+      <div style="font-size:12px;color:var(--text-muted);margin-top:4px;">Secure · Read-only · Encrypted</div>
+    </div>
+
+    <button class="btn btn-primary" id="sync-btn" onclick="startPlatformSync()">🔗 Sync Platform Data →</button>
+    <button class="btn btn-secondary" id="skip-btn" onclick="go('s-zone')" style="margin-top:10px;">Skip · Enter manually</button>
+    <div id="continue-btn-wrap" style="display:none;">
+      <button class="btn btn-primary" onclick="go('s-zone')">Confirm & Choose Zone →</button>
+    </div>
+    <div class="spacer"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     PHASE 2 · SCREEN B: ZONE SELECTION (Registration Step 3)
+════════════════════════════════════════════════════════ -->
+<div class="screen" id="s-zone">
+  <div class="topbar">
+    <div class="logo">
+      <div class="logo-icon">⚔️</div>
+      <div class="logo-text">Gaashaanka<span>Pay</span></div>
+    </div>
+    <button class="btn btn-ghost" onclick="go('s-platform')" style="width:auto;padding:0;font-size:22px;">←</button>
+  </div>
+  <div class="content">
+    <div class="progress-wrap">
+      <div class="progress-step done"></div>
+      <div class="progress-step done"></div>
+      <div class="progress-step done"></div>
+      <div class="progress-step active"></div>
+      <div class="progress-step"></div>
+    </div>
+    <div class="section-head">
+      <h2>Your Primary Zone</h2>
+      <p>NEXUS has mapped 18 Chennai micro-zones. Zone risk directly adjusts your weekly premium.</p>
+    </div>
+
+    <!-- Zone legend -->
+    <div style="display:flex;gap:12px;margin-bottom:14px;font-size:11px;">
+      <div style="display:flex;align-items:center;gap:5px;"><div style="width:8px;height:8px;border-radius:2px;background:var(--red);"></div><span style="color:var(--text-muted);">High risk</span></div>
+      <div style="display:flex;align-items:center;gap:5px;"><div style="width:8px;height:8px;border-radius:2px;background:var(--amber);"></div><span style="color:var(--text-muted);">Medium</span></div>
+      <div style="display:flex;align-items:center;gap:5px;"><div style="width:8px;height:8px;border-radius:2px;background:var(--green);"></div><span style="color:var(--text-muted);">Low risk</span></div>
+    </div>
+
+    <div class="hex-grid">
+      <div class="hex-cell risk-high selected" id="zone-velachery" onclick="selectZone('velachery',this)">
+        <div class="hex-name">Velachery</div>
+        <div class="hex-risk high">● High</div>
+      </div>
+      <div class="hex-cell risk-med" id="zone-tnagar" onclick="selectZone('tnagar',this)">
+        <div class="hex-name">T. Nagar</div>
+        <div class="hex-risk med">● Medium</div>
+      </div>
+      <div class="hex-cell risk-low" id="zone-annanagar" onclick="selectZone('annanagar',this)">
+        <div class="hex-name">Anna Nagar</div>
+        <div class="hex-risk low">● Low</div>
+      </div>
+      <div class="hex-cell risk-med" id="zone-omr" onclick="selectZone('omr',this)">
+        <div class="hex-name">OMR</div>
+        <div class="hex-risk med">● Medium</div>
+      </div>
+      <div class="hex-cell risk-med" id="zone-adyar" onclick="selectZone('adyar',this)">
+        <div class="hex-name">Adyar</div>
+        <div class="hex-risk med">● Medium</div>
+      </div>
+      <div class="hex-cell risk-low" id="zone-tambaram" onclick="selectZone('tambaram',this)">
+        <div class="hex-name">Tambaram</div>
+        <div class="hex-risk low">● Low</div>
+      </div>
+    </div>
+
+    <div class="zone-info-panel" id="zone-info">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <div>
+          <div style="font-family:'Chakra Petch',sans-serif;font-size:16px;font-weight:700;" id="zone-info-name">Velachery</div>
+          <div style="font-size:12px;color:var(--red);margin-top:2px;" id="zone-info-risk">⚠ High Flood Risk Zone</div>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-family:'Chakra Petch',sans-serif;font-size:18px;font-weight:800;color:var(--red);" id="zone-info-impact">+₹11/wk</div>
+          <div style="font-size:11px;color:var(--text-muted);">Premium impact</div>
+        </div>
+      </div>
+      <div class="zone-info-grid">
+        <div class="zone-info-item">
+          <div class="zone-info-val" id="zone-floods" style="color:var(--red);">5</div>
+          <div class="zone-info-label">Floods (5yrs)</div>
+        </div>
+        <div class="zone-info-item">
+          <div class="zone-info-val" id="zone-wl" style="color:var(--amber);">78</div>
+          <div class="zone-info-label">Waterlog Index</div>
+        </div>
+        <div class="zone-info-item">
+          <div class="zone-info-val" id="zone-riders" style="color:var(--text);">234</div>
+          <div class="zone-info-label">Active Riders</div>
+        </div>
+      </div>
+    </div>
+
+    <button class="btn btn-primary" onclick="goRiskProfile()">Calculate My NEXUS Score →</button>
+    <div class="spacer"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     PHASE 2 · SCREEN C: NEXUS DYNAMIC PRICING ENGINE
+════════════════════════════════════════════════════════ -->
+<div class="screen" id="s-nexus">
+  <div class="topbar">
+    <div class="logo">
+      <div class="logo-icon">⚔️</div>
+      <div class="logo-text">Gaashaanka<span>Pay</span></div>
+    </div>
+    <button class="btn btn-ghost" onclick="go('s-plans')" style="width:auto;padding:0;font-size:22px;">←</button>
+  </div>
+  <div class="content">
+    <div class="nexus-header">
+      <div class="nexus-logo">NEXUS</div>
+      <div class="nexus-sub">Neural EXperience Underwriting System</div>
+      <div class="nexus-tag">7 live signals · Updated every 6 hours</div>
+    </div>
+
+    <div class="section-title" style="margin-bottom:10px;">Live Pricing Signals</div>
+    <div style="font-size:12px;color:var(--text-muted);margin-bottom:14px;">Your premium is computed from these 7 real-time data sources. Toggle zones below to see how it shifts.</div>
+
+    <div class="signal-grid">
+      <div class="signal-card">
+        <div class="signal-icon">🌊</div>
+        <div class="signal-name">Zone Flood Risk</div>
+        <div class="signal-val">Velachery · HIGH</div>
+        <div class="signal-impact impact-add" id="sig-zone">+₹11</div>
+      </div>
+      <div class="signal-card">
+        <div class="signal-icon">📊</div>
+        <div class="signal-name">Zone Claim History</div>
+        <div class="signal-val">3 events in 5yrs</div>
+        <div class="signal-impact impact-add">+₹6</div>
+      </div>
+      <div class="signal-card">
+        <div class="signal-icon">🌧️</div>
+        <div class="signal-name">7-Day IMD Forecast</div>
+        <div class="signal-val">Heavy rain ahead</div>
+        <div class="signal-impact impact-add">+₹8</div>
+      </div>
+      <div class="signal-card">
+        <div class="signal-icon">⏱️</div>
+        <div class="signal-name">Platform Exposure</div>
+        <div class="signal-val">48 hrs/week</div>
+        <div class="signal-impact impact-add">+₹3</div>
+      </div>
+      <div class="signal-card">
+        <div class="signal-icon">🏆</div>
+        <div class="signal-name">AEGIS Trust Score</div>
+        <div class="signal-val">0.95 · Excellent</div>
+        <div class="signal-impact impact-sub">-₹5</div>
+      </div>
+      <div class="signal-card">
+        <div class="signal-icon">📅</div>
+        <div class="signal-name">Seasonal Surge</div>
+        <div class="signal-val">Jul Monsoon Peak</div>
+        <div class="signal-impact impact-add">+₹4</div>
+      </div>
+    </div>
+
+    <!-- Early adopter takes full width -->
+    <div class="signal-card" style="margin-bottom:16px;display:flex;align-items:center;gap:12px;">
+      <div style="font-size:24px;">🎁</div>
+      <div style="flex:1;">
+        <div class="signal-name" style="font-size:12px;color:var(--text-muted);">EARLY ADOPTER REWARD</div>
+        <div class="signal-val" style="font-size:13px;color:var(--text-dim);">First 500 riders — limited offer</div>
+      </div>
+      <div class="signal-impact impact-sub" style="font-size:17px;">-₹8</div>
+    </div>
+
+    <div class="nexus-total-card">
+      <div class="nexus-calc-row"><span style="color:var(--text-muted);">Base rate</span><span>₹89</span></div>
+      <div class="nexus-calc-row"><span style="color:var(--text-muted);">Signal adjustments</span><span style="color:var(--red);">+₹27</span></div>
+      <div class="nexus-calc-row"><span style="color:var(--text-muted);">Discounts</span><span style="color:var(--green);">-₹13</span></div>
+      <div class="nexus-calc-row" style="margin-top:8px;padding-top:12px;border-top:1px solid var(--border);">
+        <span style="font-weight:700;font-size:15px;">Your NEXUS Rate</span>
+        <span class="nexus-final" id="nexus-final-price">₹108/wk</span>
+      </div>
+    </div>
+
+    <!-- What-if switcher -->
+    <div class="section-title">What-If Simulator</div>
+    <div style="font-size:12px;color:var(--text-muted);margin-bottom:10px;">Switch your zone to see how premium changes. The model charges ₹2 less per week for historically safe zones.</div>
+    <div class="pill-group" style="margin-bottom:14px;" id="nexus-zone-pills">
+      <div class="pill selected" onclick="nexusZone('velachery',108,this)">Velachery ₹108</div>
+      <div class="pill" onclick="nexusZone('tnagar',96,this)">T.Nagar ₹96</div>
+      <div class="pill" onclick="nexusZone('annanagar',82,this)">Anna Nagar ₹82</div>
+      <div class="pill" onclick="nexusZone('tambaram',85,this)">Tambaram ₹85</div>
+    </div>
+
+    <div class="nexus-compare">
+      <div class="nexus-cmp-item">
+        <div class="nexus-cmp-val" id="nexus-your-price" style="color:var(--purple);">₹108</div>
+        <div class="nexus-cmp-label">Your NEXUS Rate</div>
+      </div>
+      <div style="width:1px;background:var(--border-dim);"></div>
+      <div class="nexus-cmp-item">
+        <div class="nexus-cmp-val" style="color:var(--text-muted);text-decoration:line-through;">₹180</div>
+        <div class="nexus-cmp-label">Industry Average</div>
+      </div>
+      <div style="width:1px;background:var(--border-dim);"></div>
+      <div class="nexus-cmp-item">
+        <div class="nexus-cmp-val" id="nexus-savings" style="color:var(--green);">₹72</div>
+        <div class="nexus-cmp-label">You Save / Week</div>
+      </div>
+    </div>
+
+    <button class="btn btn-primary" onclick="go('s-plans')">← Choose a Plan</button>
+    <div class="spacer"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     PHASE 2 · SCREEN D: POLICY MANAGEMENT
+════════════════════════════════════════════════════════ -->
+<div class="screen" id="s-policy">
+  <div class="topbar">
+    <div class="logo">
+      <div class="logo-icon">⚔️</div>
+      <div class="logo-text">Gaashaanka<span>Pay</span></div>
+    </div>
+    <button class="btn btn-ghost" onclick="go('s-dashboard')" style="width:auto;padding:0;font-size:22px;">←</button>
+  </div>
+  <div class="content">
+    <div class="section-head">
+      <h2>Policy Management</h2>
+      <p>Arjun Selvam · Plus Cover · Active</p>
+    </div>
+
+    <div class="policy-hero">
+      <div class="policy-status-row">
+        <div>
+          <div style="font-family:'Chakra Petch',sans-serif;font-size:20px;font-weight:800;">Plus Cover</div>
+          <div style="font-size:12px;color:var(--text-dim);margin-top:3px;">Policy #GKP-2026-04812</div>
+        </div>
+        <div class="dash-policy-tag"><div class="pulse"></div>Active</div>
+      </div>
+      <div class="coverage-bar-wrap">
+        <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text-dim);margin-bottom:6px;">
+          <span>Monthly Coverage Used</span>
+          <span style="color:var(--amber);">₹487 / ₹1,300</span>
+        </div>
+        <div class="coverage-bar-bg">
+          <div class="coverage-bar-fill" id="coverage-fill" style="width:0%"></div>
+        </div>
+        <div class="coverage-label"><span>0%</span><span>37% used</span><span>100%</span></div>
+      </div>
+    </div>
+
+    <div class="policy-detail-grid">
+      <div class="policy-detail-item">
+        <div class="pd-label">Renewal Date</div>
+        <div class="pd-val">27 Jul 2026</div>
+      </div>
+      <div class="policy-detail-item">
+        <div class="pd-label">Weekly Premium</div>
+        <div class="pd-val" style="color:var(--amber);">₹108</div>
+      </div>
+      <div class="policy-detail-item">
+        <div class="pd-label">Zone</div>
+        <div class="pd-val">Velachery</div>
+      </div>
+      <div class="policy-detail-item">
+        <div class="pd-label">Coverage Rate</div>
+        <div class="pd-val" style="color:var(--green);">65%</div>
+      </div>
+      <div class="policy-detail-item">
+        <div class="pd-label">NEXUS Price</div>
+        <div class="pd-val" style="color:var(--purple);">AI-optimised</div>
+      </div>
+      <div class="policy-detail-item">
+        <div class="pd-label">Active Triggers</div>
+        <div class="pd-val">3 of 5</div>
+      </div>
+    </div>
+
+    <div class="section-title">Quick Actions</div>
+    <div class="quick-actions">
+      <div class="quick-action-btn" onclick="toast('Upgrade flow coming soon!')">
+        <div class="qa-icon">⬆️</div>
+        <div class="qa-label">Upgrade Plan</div>
+        <div class="qa-sub">Move to Max Cover</div>
+      </div>
+      <div class="quick-action-btn" onclick="toast('Platform Outage trigger added!')">
+        <div class="qa-icon">➕</div>
+        <div class="qa-label">Add Trigger</div>
+        <div class="qa-sub">Platform downtime</div>
+      </div>
+      <div class="quick-action-btn" onclick="toast('Cover paused — no premium next week')">
+        <div class="qa-icon">⏸️</div>
+        <div class="qa-label">Pause Cover</div>
+        <div class="qa-sub">Skip next week</div>
+      </div>
+      <div class="quick-action-btn" onclick="toast('Policy certificate downloaded!')">
+        <div class="qa-icon">📄</div>
+        <div class="qa-label">Certificate</div>
+        <div class="qa-sub">Download PDF</div>
+      </div>
+    </div>
+
+    <div class="section-title">Active Triggers</div>
+    <div style="background:var(--bg3);border:1px solid var(--border-dim);border-radius:var(--radius);padding:4px 16px;margin-bottom:20px;">
+      <div class="trigger-toggle-row">
+        <div class="tt-info">
+          <div class="tt-icon">🌊</div>
+          <div><div class="tt-name">Flash Flood</div><div class="tt-src">IMD Rainfall API</div></div>
+        </div>
+        <div class="toggle-switch"></div>
+      </div>
+      <div class="trigger-toggle-row">
+        <div class="tt-info">
+          <div class="tt-icon">🌡️</div>
+          <div><div class="tt-name">Extreme Heat</div><div class="tt-src">IMD Temperature API</div></div>
+        </div>
+        <div class="toggle-switch"></div>
+      </div>
+      <div class="trigger-toggle-row" style="border-bottom:none;">
+        <div class="tt-info">
+          <div class="tt-icon">💨</div>
+          <div><div class="tt-name">AQI Hazard</div><div class="tt-src">CPCB Index API</div></div>
+        </div>
+        <div class="toggle-switch"></div>
+      </div>
+    </div>
+
+    <div class="info-box">
+      Next auto-renewal on <strong>27 Jul</strong> at ₹108/week. NEXUS will re-price using the latest monsoon forecast data before charging.
+    </div>
+    <button class="btn btn-secondary" onclick="go('s-dashboard')">← Back to Home</button>
+    <div class="spacer"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     PHASE 2 · SCREEN E: 5 AUTOMATED TRIGGERS HUB
+════════════════════════════════════════════════════════ -->
+<div class="screen" id="s-triggers">
+  <div class="topbar">
+    <div class="logo">
+      <div class="logo-icon">⚔️</div>
+      <div class="logo-text">Gaashaanka<span>Pay</span></div>
+    </div>
+    <button class="btn btn-ghost" onclick="go('s-dashboard')" style="width:auto;padding:0;font-size:22px;">←</button>
+  </div>
+  <div class="content">
+    <div class="section-head">
+      <h2>Income Protection Grid</h2>
+      <p>5 automated signals watching your zone 24×7. Any breach triggers an auto-claim.</p>
+    </div>
+
+    <!-- Trigger 1: Flash Flood -->
+    <div class="trigger-monitor-card" id="trig-flood">
+      <div class="tmc-top">
+        <div class="tmc-emoji" style="background:rgba(91,156,246,0.12);">🌊</div>
+        <div>
+          <div class="tmc-title">Flash Flood / Waterlogging</div>
+          <div class="tmc-source">Source: IMD Alert API · Updated 4 min ago</div>
+        </div>
+        <div class="tmc-status-badge status-monitoring" id="flood-badge">● Monitoring</div>
+      </div>
+      <div class="tmc-meter">
+        <div style="font-size:11px;color:var(--text-muted);width:70px;">Rainfall</div>
+        <div class="tmc-meter-track">
+          <div class="tmc-meter-fill bar-safe" id="flood-bar" style="width:28%;background:var(--green);"></div>
+        </div>
+        <div style="font-size:11px;color:var(--text-muted);width:60px;text-align:right;" id="flood-pct">28%</div>
+      </div>
+      <div class="tmc-vals">
+        <span id="flood-current">Current: 14mm/3hrs</span>
+        <span>Trigger: 50mm/3hrs</span>
+      </div>
+    </div>
+
+    <!-- Trigger 2: Heat Dome -->
+    <div class="trigger-monitor-card" id="trig-heat">
+      <div class="tmc-top">
+        <div class="tmc-emoji" style="background:rgba(245,166,35,0.12);">🌡️</div>
+        <div>
+          <div class="tmc-title">Heat Dome Alert</div>
+          <div class="tmc-source">Source: IMD Temperature Feed · Real-time</div>
+        </div>
+        <div class="tmc-status-badge status-alert" id="heat-badge">⚠ Warning</div>
+      </div>
+      <div class="tmc-meter">
+        <div style="font-size:11px;color:var(--text-muted);width:70px;">Temp (°C)</div>
+        <div class="tmc-meter-track">
+          <div class="tmc-meter-fill" id="heat-bar" style="width:90%;background:var(--amber);"></div>
+        </div>
+        <div style="font-size:11px;color:var(--amber);width:60px;text-align:right;" id="heat-pct">90%</div>
+      </div>
+      <div class="tmc-vals">
+        <span id="heat-current" style="color:var(--amber);">Current: 37.8°C ⚠</span>
+        <span>Trigger: 42°C</span>
+      </div>
+    </div>
+
+    <!-- Trigger 3: AQI -->
+    <div class="trigger-monitor-card" id="trig-aqi">
+      <div class="tmc-top">
+        <div class="tmc-emoji" style="background:rgba(167,139,250,0.12);">💨</div>
+        <div>
+          <div class="tmc-title">AQI Hazard</div>
+          <div class="tmc-source">Source: CPCB Index API · Updated 12 min ago</div>
+        </div>
+        <div class="tmc-status-badge status-monitoring" id="aqi-badge">● Monitoring</div>
+      </div>
+      <div class="tmc-meter">
+        <div style="font-size:11px;color:var(--text-muted);width:70px;">AQI Index</div>
+        <div class="tmc-meter-track">
+          <div class="tmc-meter-fill" id="aqi-bar2" style="width:47%;background:var(--green);"></div>
+        </div>
+        <div style="font-size:11px;color:var(--text-muted);width:60px;text-align:right;" id="aqi-pct">47%</div>
+      </div>
+      <div class="tmc-vals">
+        <span id="aqi-current">Current: AQI 142</span>
+        <span>Trigger: AQI 300</span>
+      </div>
+    </div>
+
+    <!-- Trigger 4: Road Disruption -->
+    <div class="trigger-monitor-card" id="trig-road">
+      <div class="tmc-top">
+        <div class="tmc-emoji" style="background:rgba(224,92,92,0.1);">🚧</div>
+        <div>
+          <div class="tmc-title">Road Disruption Intel</div>
+          <div class="tmc-source">Source: NHAI / Google Maps API · Live</div>
+        </div>
+        <div class="tmc-status-badge status-monitoring" id="road-badge">● Monitoring</div>
+      </div>
+      <div class="tmc-meter">
+        <div style="font-size:11px;color:var(--text-muted);width:70px;">Roads blocked</div>
+        <div class="tmc-meter-track">
+          <div class="tmc-meter-fill" id="road-bar" style="width:20%;background:var(--green);"></div>
+        </div>
+        <div style="font-size:11px;color:var(--text-muted);width:60px;text-align:right;" id="road-pct">20%</div>
+      </div>
+      <div class="tmc-vals">
+        <span id="road-current">1 of 5 arterials blocked</span>
+        <span>Trigger: 3+ roads blocked</span>
+      </div>
+    </div>
+
+    <!-- Trigger 5: Platform Outage -->
+    <div class="trigger-monitor-card" id="trig-platform">
+      <div class="tmc-top">
+        <div class="tmc-emoji" style="background:rgba(76,175,125,0.1);">📵</div>
+        <div>
+          <div class="tmc-title">Platform Outage</div>
+          <div class="tmc-source">Source: Swiggy StatusPage API · Polling</div>
+        </div>
+        <div class="tmc-status-badge status-monitoring" id="platform-badge">● Monitoring</div>
+      </div>
+      <div class="tmc-meter">
+        <div style="font-size:11px;color:var(--text-muted);width:70px;">Downtime</div>
+        <div class="tmc-meter-track">
+          <div class="tmc-meter-fill" id="platform-bar" style="width:0%;background:var(--green);"></div>
+        </div>
+        <div style="font-size:11px;color:var(--text-muted);width:60px;text-align:right;" id="platform-pct">0 min</div>
+      </div>
+      <div class="tmc-vals">
+        <span id="platform-current">Platform: Online ✓</span>
+        <span>Trigger: 30 min down</span>
+      </div>
+    </div>
+
+    <!-- City feed -->
+    <div class="city-feed">
+      <div class="city-feed-title">⚡ Live Chennai Disruption Feed</div>
+      <div class="feed-item"><div class="feed-dot" style="background:var(--green)"></div>Adyar · All clear · 09:42</div>
+      <div class="feed-item"><div class="feed-dot" style="background:var(--amber)"></div>T. Nagar · Heat: 37.2°C — approaching threshold · 09:38</div>
+      <div class="feed-item"><div class="feed-dot" style="background:var(--green)"></div>OMR · AQI 118 — safe range · 09:31</div>
+      <div class="feed-item"><div class="feed-dot" style="background:var(--red)"></div>Velachery · Flash flood — auto-claim filed for 48 riders · 08:17</div>
+    </div>
+
+    <div style="height:16px;"></div>
+    <button class="btn btn-primary" onclick="goClaimDemo()">⚡ Simulate Flood Trigger →</button>
+    <div class="spacer"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     PHASE 2 · SCREEN F: CLAIMS MANAGEMENT
+════════════════════════════════════════════════════════ -->
+<div class="screen" id="s-claims-mgmt">
+  <div class="topbar">
+    <div class="logo">
+      <div class="logo-icon">⚔️</div>
+      <div class="logo-text">Gaashaanka<span>Pay</span></div>
+    </div>
+    <button class="btn btn-ghost" onclick="go('s-dashboard')" style="width:auto;padding:0;font-size:22px;">←</button>
+  </div>
+  <div class="content">
+    <div class="section-head">
+      <h2>Claims Management</h2>
+      <p>Full history · zero-touch processing · AEGIS verified</p>
+    </div>
+
+    <!-- AEGIS Banner -->
+    <div class="aegis-banner">
+      <div class="aegis-score-big">0.95</div>
+      <div>
+        <div class="aegis-info-label">🔷 AEGIS Trust Score</div>
+        <div class="aegis-info-sub">Auto-approve eligible · Tier 1 rider</div>
+        <div class="aegis-info-sub" style="margin-top:2px;color:var(--green);">All 2 claims processed in &lt;10 min avg</div>
+      </div>
+    </div>
+
+    <!-- Zero-touch badge -->
+    <div class="zero-touch-badge">
+      <div class="pulse"></div>
+      Zero-Touch Active · All eligible claims auto-filed & auto-approved
+    </div>
+
+    <!-- Tabs -->
+    <div class="claims-tab-bar">
+      <div class="claims-tab active" onclick="switchTab('all')">All (2)</div>
+      <div class="claims-tab" onclick="switchTab('active')">Active</div>
+      <div class="claims-tab" onclick="switchTab('history')">History</div>
+    </div>
+
+    <!-- Tab: All Claims -->
+    <div id="tab-all" class="tab-panel active">
+
+      <!-- Claim 1 - Recent -->
+      <div class="claim-card-full">
+        <div class="ccf-top">
+          <div class="ccf-type">
+            <div class="ccf-emoji">🌊</div>
+            <div>
+              <div class="ccf-name">Flash Flood · Velachery</div>
+              <div class="ccf-date">Jul 14, 2026 · Auto-triggered</div>
+            </div>
+          </div>
+          <div class="ccf-amount">₹243</div>
+        </div>
+        <div class="claim-timeline">
+          <div class="ct-step">
+            <div class="ct-dot done"></div>
+            <div class="ct-label">Detected</div>
+          </div>
+          <div class="ct-line done"></div>
+          <div class="ct-step">
+            <div class="ct-dot done"></div>
+            <div class="ct-label">Verified</div>
+          </div>
+          <div class="ct-line done"></div>
+          <div class="ct-step">
+            <div class="ct-dot done"></div>
+            <div class="ct-label">Approved</div>
+          </div>
+          <div class="ct-line done"></div>
+          <div class="ct-step">
+            <div class="ct-dot done"></div>
+            <div class="ct-label">Paid</div>
+          </div>
+        </div>
+        <div style="font-size:11px;color:var(--green);margin-top:8px;">✓ UPI paid in 8 min · No action needed</div>
+      </div>
+
+      <!-- Claim 2 -->
+      <div class="claim-card-full">
+        <div class="ccf-top">
+          <div class="ccf-type">
+            <div class="ccf-emoji">🌡️</div>
+            <div>
+              <div class="ccf-name">Heat Alert · Velachery</div>
+              <div class="ccf-date">May 5, 2026 · Auto-triggered</div>
+            </div>
+          </div>
+          <div class="ccf-amount">₹244</div>
+        </div>
+        <div class="claim-timeline">
+          <div class="ct-step">
+            <div class="ct-dot done"></div>
+            <div class="ct-label">Detected</div>
+          </div>
+          <div class="ct-line done"></div>
+          <div class="ct-step">
+            <div class="ct-dot done"></div>
+            <div class="ct-label">Verified</div>
+          </div>
+          <div class="ct-line done"></div>
+          <div class="ct-step">
+            <div class="ct-dot done"></div>
+            <div class="ct-label">Approved</div>
+          </div>
+          <div class="ct-line done"></div>
+          <div class="ct-step">
+            <div class="ct-dot done"></div>
+            <div class="ct-label">Paid</div>
+          </div>
+        </div>
+        <div style="font-size:11px;color:var(--green);margin-top:8px;">✓ UPI paid in 6 min · No action needed</div>
+      </div>
+
+      <!-- Summary -->
+      <div class="payout-calc" style="margin-top:4px;">
+        <div class="calc-row"><span class="calc-left">Total claims filed</span><span class="calc-right">2</span></div>
+        <div class="calc-row"><span class="calc-left">Auto-approved</span><span class="calc-right" style="color:var(--green);">2 (100%)</span></div>
+        <div class="calc-row"><span class="calc-left">Avg processing time</span><span class="calc-right" style="color:var(--green);">7 min</span></div>
+        <div class="calc-row total"><span class="calc-left">Total paid out</span><span class="calc-right">₹487</span></div>
+      </div>
+    </div>
+
+    <!-- Tab: Active -->
+    <div id="tab-active" class="tab-panel">
+      <div style="text-align:center;padding:40px 20px;">
+        <div style="font-size:40px;margin-bottom:12px;">✅</div>
+        <div style="font-size:15px;font-weight:600;margin-bottom:6px;">No active claims</div>
+        <div style="font-size:13px;color:var(--text-muted);">All weather triggers currently within safe thresholds. We're watching. You deliver.</div>
+      </div>
+    </div>
+
+    <!-- Tab: History -->
+    <div id="tab-history" class="tab-panel">
+      <div class="history-item">
+        <div class="history-icon rain">🌊</div>
+        <div class="history-info">
+          <div class="history-event">Flash Flood · Velachery</div>
+          <div class="history-date">Jul 14, 2026 · 4 hrs · AEGIS: 0.95</div>
+        </div>
+        <div class="history-amount">₹243</div>
+      </div>
+      <div class="history-item">
+        <div class="history-icon heat">🌡️</div>
+        <div class="history-info">
+          <div class="history-event">Heat Alert · Velachery</div>
+          <div class="history-date">May 5, 2026 · 5 hrs · AEGIS: 0.95</div>
+        </div>
+        <div class="history-amount">₹244</div>
+      </div>
+    </div>
+
+    <div style="height:12px;"></div>
+    <button class="btn btn-secondary" onclick="toast('Manual claim form opens here')">+ File Manual Claim</button>
+    <div class="spacer"></div>
+  </div>
+</div>
+
+<script>
+// ── STATE ──
+let selectedPlan = 'standard';
+
+// ── NAVIGATION ──
+function go(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+function selectPill(groupId, el) {
+  document.querySelectorAll('#' + groupId + ' .pill').forEach(p => p.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+function selectPlan(plan) {
+  selectedPlan = plan;
+  document.querySelectorAll('.plan-card').forEach(c => c.classList.remove('selected'));
+  document.getElementById('plan-' + plan).classList.add('selected');
+}
+
+// ── RISK PROFILE ANIMATION ──
+function goRiskProfile() {
+  go('s-risk');
+  const arc = document.getElementById('risk-arc');
+  const num = document.getElementById('risk-num');
+  const label = document.getElementById('risk-label');
+  const circumference = 364.4;
+  const score = 72;
+  let current = 0;
+  const interval = setInterval(() => {
+    current += 2;
+    if (current >= score) { current = score; clearInterval(interval); }
+    num.textContent = current;
+    const offset = circumference - (current / 100) * circumference;
+    arc.style.strokeDashoffset = offset;
+    if (current >= 70) arc.style.stroke = '#e05c5c';
+    else if (current >= 50) arc.style.stroke = '#f5a623';
+    else arc.style.stroke = '#4caf7d';
+  }, 20);
+  setTimeout(() => {
+    label.textContent = score >= 70 ? 'High Risk Zone' : score >= 50 ? 'Medium Risk' : 'Low Risk';
+  }, 800);
+}
+
+// ── PAYMENT SIMULATION ──
+function simulatePayment() {
+  go('s-paying');
+  const msgs = ['Initiating cover...', 'Verifying UPI handle...', 'Activating GaashaankaPay...', 'Starting weather watch...'];
+  let i = 0;
+  const el = document.getElementById('pay-msg');
+  const iv = setInterval(() => {
+    if (i < msgs.length - 1) { i++; el.textContent = msgs[i]; }
+    else { clearInterval(iv); setTimeout(() => go('s-dashboard'), 600); }
+  }, 900);
+}
+
+// ── CLAIM DEMO ──
+function goClaimDemo() {
+  go('s-claim');
+  // Reset layer 3
+  const l3dot = document.getElementById('l3-dot');
+  const l3st = document.getElementById('l3-status');
+  const l4row = document.getElementById('l4-row');
+  const l4st = document.getElementById('l4-status');
+  l3dot.className = 'layer-dot processing';
+  l3st.textContent = 'Verifying...';
+  l3st.className = 'layer-status processing';
+  l4row.style.opacity = '0.4';
+  l4st.textContent = 'Pending...';
+  // Animate layer 3 after 2s
+  setTimeout(() => {
+    l3dot.className = 'layer-dot pass';
+    l3st.textContent = 'PASS';
+    l3st.className = 'layer-status pass';
+    l4row.style.opacity = '1';
+    l4st.textContent = '0.92 — Auto-approve';
+    l4st.style.color = 'var(--green)';
+  }, 2200);
+}
+
+function approveClaim() {
+  go('s-paying');
+  document.getElementById('pay-msg').textContent = 'Releasing payout...';
+  setTimeout(() => go('s-success'), 1800);
+}
+
+// ── WEATHER TICKER ──
+function tickWeather() {
+  const rain = Math.floor(Math.random() * 20) + 8;
+  const temp = (37 + Math.random() * 2).toFixed(1);
+  const aqi = Math.floor(Math.random() * 40) + 120;
+  document.getElementById('rain-val').textContent = `${rain}mm / 3hrs · Trigger: 50mm`;
+  document.getElementById('temp-val').textContent = `${temp}°C · Trigger: 42°C`;
+  document.getElementById('aqi-val').textContent = `${aqi} · Trigger: 300`;
+  document.getElementById('rain-bar').style.width = (rain/50*100) + '%';
+  document.getElementById('temp-bar').style.width = (parseFloat(temp)/42*100) + '%';
+  document.getElementById('aqi-bar').style.width = (aqi/300*100) + '%';
+}
+setInterval(tickWeather, 5000);
+
+// ── TOAST ──
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+// ── PHASE 2: PLATFORM SYNC ──
+let selectedPlatformName = 'Swiggy';
+function selectPlatform(p) {
+  ['swiggy','zomato','blinkit'].forEach(id => document.getElementById('plat-'+id).classList.remove('selected'));
+  document.getElementById('plat-'+p).classList.add('selected');
+  const names = { swiggy: 'Swiggy', zomato: 'Zomato', blinkit: 'Blinkit' };
+  selectedPlatformName = names[p];
+  document.getElementById('platform-synced').style.display = 'none';
+  document.getElementById('continue-btn-wrap').style.display = 'none';
+  document.getElementById('sync-btn').style.display = 'flex';
+  document.getElementById('skip-btn').style.display = 'flex';
+}
+
+function startPlatformSync() {
+  document.getElementById('sync-btn').style.display = 'none';
+  document.getElementById('skip-btn').style.display = 'none';
+  document.getElementById('platform-syncing').style.display = 'block';
+  const msgs = [
+    `Connecting to ${selectedPlatformName} Partner API...`,
+    'Authenticating via OAuth 2.0...',
+    'Fetching order & earnings history...',
+    'Calculating risk profile...',
+    'Done ✓'
+  ];
+  let i = 0;
+  const el = document.getElementById('sync-msg');
+  const iv = setInterval(() => {
+    if (i < msgs.length - 1) { i++; el.textContent = msgs[i]; }
+    else {
+      clearInterval(iv);
+      setTimeout(() => {
+        document.getElementById('platform-syncing').style.display = 'none';
+        document.getElementById('platform-synced').style.display = 'block';
+        document.getElementById('continue-btn-wrap').style.display = 'block';
+        toast(`${selectedPlatformName} synced! Earnings & hours auto-filled ✓`);
+      }, 400);
+    }
+  }, 700);
+}
+
+// ── PHASE 2: ZONE SELECTION ──
+const zoneData = {
+  velachery: { name:'Velachery', risk:'⚠ High Flood Risk Zone', riskColor:'var(--red)', impact:'+₹11/wk', floods:'5', wl:'78', riders:'234' },
+  tnagar:    { name:'T. Nagar',  risk:'◎ Medium Risk Zone',      riskColor:'var(--amber)', impact:'+₹7/wk', floods:'2', wl:'45', riders:'198' },
+  annanagar: { name:'Anna Nagar', risk:'✓ Low Risk Zone',        riskColor:'var(--green)', impact:'-₹2/wk', floods:'0', wl:'12', riders:'152' },
+  omr:       { name:'OMR',       risk:'◎ Medium Risk Zone',      riskColor:'var(--amber)', impact:'+₹5/wk', floods:'2', wl:'38', riders:'311' },
+  adyar:     { name:'Adyar',     risk:'◎ Medium Risk Zone',      riskColor:'var(--amber)', impact:'+₹6/wk', floods:'3', wl:'51', riders:'176' },
+  tambaram:  { name:'Tambaram',  risk:'✓ Low Risk Zone',        riskColor:'var(--green)', impact:'-₹1/wk', floods:'1', wl:'18', riders:'143' },
+};
+
+function selectZone(key, el) {
+  document.querySelectorAll('.hex-cell').forEach(h => h.classList.remove('selected'));
+  el.classList.add('selected');
+  const d = zoneData[key];
+  document.getElementById('zone-info-name').textContent = d.name;
+  document.getElementById('zone-info-risk').textContent = d.risk;
+  document.getElementById('zone-info-risk').style.color = d.riskColor;
+  document.getElementById('zone-info-impact').textContent = d.impact;
+  document.getElementById('zone-info-impact').style.color = d.riskColor;
+  document.getElementById('zone-floods').textContent = d.floods;
+  document.getElementById('zone-wl').textContent = d.wl;
+  document.getElementById('zone-riders').textContent = d.riders;
+}
+
+// ── PHASE 2: NEXUS WHAT-IF ──
+function nexusZone(zone, price, el) {
+  document.querySelectorAll('#nexus-zone-pills .pill').forEach(p => p.classList.remove('selected'));
+  el.classList.add('selected');
+  const savings = 180 - price;
+  document.getElementById('nexus-final-price').textContent = `₹${price}/wk`;
+  document.getElementById('nexus-your-price').textContent = `₹${price}`;
+  document.getElementById('nexus-savings').textContent = `₹${savings}`;
+  if (zone === 'annanagar') {
+    document.getElementById('sig-zone').textContent = '-₹2';
+    document.getElementById('sig-zone').className = 'signal-impact impact-sub';
+    toast('✓ Anna Nagar is a safe zone — you save ₹2/week');
+  } else {
+    document.getElementById('sig-zone').textContent = '+₹11';
+    document.getElementById('sig-zone').className = 'signal-impact impact-add';
+  }
+}
+
+// ── PHASE 2: POLICY ──
+function goPolicy() {
+  go('s-policy');
+  setTimeout(() => {
+    document.getElementById('coverage-fill').style.width = '37%';
+  }, 300);
+}
+
+// ── PHASE 2: CLAIMS TABS ──
+function switchTab(tab) {
+  document.querySelectorAll('.claims-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById('tab-' + tab).classList.add('active');
+}
+
+// ── PHASE 2: LIVE TRIGGER UPDATES ──
+function tickTriggers() {
+  const rain = Math.floor(Math.random() * 18) + 8;
+  const temp = (37 + Math.random() * 0.8).toFixed(1);
+  const aqi = Math.floor(Math.random() * 30) + 130;
+
+  // Flood trigger
+  const fp = Math.round(rain/50*100);
+  document.getElementById('flood-bar').style.width = fp + '%';
+  document.getElementById('flood-current').textContent = `Current: ${rain}mm/3hrs`;
+  document.getElementById('flood-pct').textContent = fp + '%';
+
+  // Heat trigger (warning zone ~90%)
+  const hp = Math.round(parseFloat(temp)/42*100);
+  const hbar = document.getElementById('heat-bar');
+  hbar.style.width = hp + '%';
+  hbar.style.background = hp > 85 ? 'var(--amber)' : 'var(--green)';
+  document.getElementById('heat-current').textContent = `Current: ${temp}°C ${hp>85?'⚠':''}`;
+  document.getElementById('heat-pct').textContent = hp + '%';
+  document.getElementById('heat-pct').style.color = hp > 85 ? 'var(--amber)' : 'var(--text-muted)';
+
+  // AQI trigger
+  const ap = Math.round(aqi/300*100);
+  document.getElementById('aqi-bar2').style.width = ap + '%';
+  document.getElementById('aqi-current').textContent = `Current: AQI ${aqi}`;
+  document.getElementById('aqi-pct').textContent = ap + '%';
+}
+setInterval(tickTriggers, 4000);
+
+// ── PHASE 2: POLICY SCREEN INIT ──
+const origGo = go;
+go = function(id) {
+  origGo(id);
+  if (id === 's-policy') {
+    setTimeout(() => {
+      const fill = document.getElementById('coverage-fill');
+      if (fill) fill.style.width = '37%';
+    }, 350);
+  }
+};
+
+// Init
+selectPlan('standard');
+selectPlatform('swiggy');
+</script>
+</body>
+</html>
